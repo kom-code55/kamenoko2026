@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI GAME STORE - あなたという名の新作ソフト</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-color: #ff4500; /* ネオンオレンジ（ゲームの新作感） */
+            --accent-blue: #0077ff;
+            --text-color: #c9d1d9;
+            --text-bright: #ffffff;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .badge {
+            background-color: var(--accent-color);
+            color: var(--text-bright);
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: inline-block;
+            margin-bottom: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            color: var(--text-bright);
+            font-size: 1.8rem;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #8b949e;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .step-num {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .step-title {
+            color: var(--text-bright);
+            font-size: 1.1rem;
+            margin: 0 0 16px 0;
+        }
+
+        /* コピーボタン */
+        .btn-copy {
+            background: linear-gradient(135deg, #ff6a00, #ff4500);
+            color: var(--text-bright);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-copy:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(255, 69, 0, 0.4);
+        }
+
+        .btn-copy.success {
+            background: linear-gradient(135deg, #2ea44f, #22863a);
+            box-shadow: 0 4px 15px rgba(34, 134, 58, 0.4);
+        }
+
+        /* アプリリンク */
+        .ai-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-app {
+            background-color: #21262d;
+            color: var(--text-bright);
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-app:active {
+            background-color: #30363d;
+        }
+
+        .footer {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 40px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* 裏側で保持するプロンプト用の非表示エリア */
+        #prompt-text {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <span class="badge">NEW RELEASE</span>
+            <h1>AI GAME STORE</h1>
+            <p class="subtitle">あなたという人間をAIがディープに分析し、<br>世界に1本だけの「ゲームソフト」を可視化します。</p>
+        </div>
+
+        <!-- STEP 1: コピー -->
+        <div class="card">
+            <span class="step-num">STEP 1</span>
+            <h2 class="step-title">「ゲーム化の呪文」をコピーする</h2>
+            <button id="copy-button" class="btn-copy" onclick="copyPrompt()">
+                呪文（プロンプト）をコピー
+            </button>
+        </div>
+
+        <!-- STEP 2: アプリ起動 -->
+        <div class="card">
+            <span class="step-num">STEP 2</span>
+            <h2 class="step-title">自分のAIアプリにペーストして送信</h2>
+            <p class="subtitle" style="margin-bottom: 16px; text-align: left; font-size: 0.85rem;">
+                日頃使っているAIアプリを開き、メッセージ入力欄にそのまま「貼り付け（ペースト）」して送信してください。数十秒であなた専用のゲームが誕生します！
+            </p>
+            <div class="ai-links">
+                <a href="https://chatgpt.com/" target="_blank" class="btn-app">ChatGPTを開く</a>
+                <a href="https://claude.ai/" target="_blank" class="btn-app">Claudeを開く</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 社員文化祭 インタラクティブ・アート部</p>
+        </div>
+
+    </div>
+
+    <!-- コピーされるプロンプトの本体（隠しテキスト） -->
+    <textarea id="prompt-text">【重要：これまでのチャット履歴から私をディープに分析し、世界に一本の「ゲームソフト」として可視化してください】
+
+あなたと私のこれまでのすべての対話履歴を振り返り、私の性格、価値観、人生観、思考の癖、精度高く分析してください。その分析結果をもとに、私を「1本の新作ゲームソフト」として表現し、思わず遊んでみたくなるような、個性的でワクワクする高品質な画像を1枚生成してください。
+
+### 1. ゲームの設定（画像生成のインスピレーション用）
+私の本質を以下の要素に昇華させてください。
+- ゲームタイトル（私の価値観を象徴する、響きが良くスタイリッシュな英語または架空の言葉）
+- ジャンル / 世界観 / ストーリー（私の人生観や関心事をベースにしたもの）
+- 主人公（私を象徴するキャラクターやアバター）
+- キャッチコピー
+
+### 2. 画像のレイアウト・デザイン指定（最重要）
+AIの画像生成の制約（構図の乱れ）を防ぐため、以下の「3分割構図」で美しく配置してください。
+
+- 【左側：ゲームパッケージ】
+  実際にゲームショップの新作棚に並んでいるような、完成されたパッケージジャケット。私の「重要アイテム」や「物語を象徴する風景」を映画のポスターのようにドラマチックに描いてください。タイトルロゴは潰れないよう、シンプルで力強いフォントでデザインしてください。
+- 【右側上部：ゲーム画面のスクリーンショット】
+  実際のプレイ画面のハメ込み風デザイン。能力値（ステータスUI）、特徴的なスキル名、獲得アイテムなどが、スタイリッシュなゲームUI（ユーザーインターフェース）として配置されている様子。
+- 【右側下部：ショップの解説カード】
+  美術館のキャプションのような美しいカード。「なぜこのゲームになったのか」「各要素が私の何を象徴しているのか」を解説するグラフやシンボル、難易度、推定プレイ時間、レビューコメントの星評価（★★★★★）などがデザインされている様子。
+
+### 3. 画像のクオリティ指定
+- スタイル：現代的な高級感のある3Dデジタルアート、またはシネマティックなコンセプトアート風。
+- 文字の扱い：画像内の細かな日本語は文字化けしやすいため、UIやロゴのテキストは「英語（English）」で統一し、スマートで海外のインディーゲームのような洗練されたビジュアルにしてください。
+
+---
+
+◆画像生成の後、以下のテキスト出力もお願いします◆
+画像だけでは伝わりきらない「ゲームの設定ディテール（日本語）」を教えてください。
+1. ゲームタイトルと、そこに込めた私の分析結果
+2. 主人公のステータスと「特徴的なスキル」の詳細（私のどんな性格を反映したか）
+3. 推定プレイ時間と、クスッと笑える「レビューコメント」の内容</textarea>
+
+    <!-- コピー処理のJavaScript -->
+    <script>
+        function copyPrompt() {
+            const copyText = document.getElementById("prompt-text");
+            const button = document.getElementById("copy-button");
+
+            // クリップボードにコピー
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                // ボタンの見た目を「成功」に変更
+                button.textContent = "コピーしました！";
+                button.classList.add("success");
+
+                // 2秒後に元の状態に戻す
+                setTimeout(() => {
+                    button.textContent = "呪文（プロンプト）をコピー";
+                    button.classList.remove("success");
+                }, 2000);
+            }).catch(err => {
+                alert("コピーに失敗しました。お手数ですが手動で選択してコピーしてください。");
+                copyText.style.display = "block"; // 失敗した場合はテキストエリアを表示して手動コピーさせる
+            });
+        }
+    </script>
+</body>
+</html>
