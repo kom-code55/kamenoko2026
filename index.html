@@ -116,28 +116,47 @@
             box-shadow: 0 4px 15px rgba(34, 134, 58, 0.4);
         }
 
-        /* アプリリンク */
+        /* アプリリンクのレイアウト変更 */
         .ai-links {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 12px;
             margin-top: 12px;
         }
 
         .btn-app {
-            background-color: #21262d;
             color: var(--text-bright);
             border: 1px solid #30363d;
             border-radius: 10px;
-            padding: 12px;
-            font-size: 0.9rem;
+            padding: 14px;
+            font-size: 1rem;
             text-decoration: none;
-            font-weight: 500;
-            display: inline-block;
-            transition: background-color 0.2s;
+            font-weight: bold;
+            display: block;
+            transition: background-color 0.2s, border-color 0.2s;
         }
-        .btn-app:active {
+
+        /* 社内Copilotボタンを目立たせるスタイル */
+        .btn-copilot {
+            background: linear-gradient(135deg, #0077ff, #0055cc);
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+        }
+        .btn-copilot:active {
+            background: linear-gradient(135deg, #0055cc, #0044aa);
+        }
+
+        .btn-other-ai {
+            background-color: #21262d;
+        }
+        .btn-other-ai:active {
             background-color: #30363d;
+        }
+
+        .other-ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         .footer {
@@ -182,16 +201,23 @@
             <span class="step-num">STEP 2</span>
             <h2 class="step-title">自分のAIアプリにペーストして送信</h2>
             <p class="subtitle" style="margin-bottom: 16px; text-align: left; font-size: 0.85rem;">
-                日頃使っているAIアプリを開き、メッセージ入力欄にそのまま「貼り付け（ペースト）」して送信してください。数十秒であなた専用のゲームが誕生します！
+                普段お使いのAIを開き、メッセージ入力欄にそのまま「貼り付け（ペースト）」して送信してください。数十秒であなた専用のゲームが誕生します！
             </p>
             <div class="ai-links">
-                <a href="https://chatgpt.com/" target="_blank" class="btn-app">ChatGPTを開く</a>
-                <a href="https://claude.ai/" target="_blank" class="btn-app">Claudeを開く</a>
+                <!-- 社内推奨Copilotボタン（最上部に大きく配置） -->
+                <a href="https://copilot.microsoft.com/" target="_blank" class="btn-app btn-copilot">Copilot を起動する</a>
+                
+                <!-- その他のAI用のサブボタン -->
+                <div class="other-ai-grid">
+                    <a href="https://chatgpt.com/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;">ChatGPT</a>
+                    <a href="https://claude.ai/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;">Claude</a>
+                </div>
             </div>
         </div>
 
+        <!-- 修正したフッタークレジット -->
         <div class="footer">
-            <p>© 2026 社員文化祭 インタラクティブ・アート部</p>
+            <p>© 2026 亀の子作品展</p>
         </div>
 
     </div>
