@@ -484,13 +484,13 @@
                 'ai_type': aiName
             });
         }
-
-        // --- カメのトコトコ大行列アニメーション（フライングバグ修正版） ---
+        
+        // --- カメのトコトコ大行列アニメーション（全員が左へハケる完成版） ---
         const stage = document.getElementById('turtle-stage');
         let activeTurtles = [];
         let maxCount = 0;
         let currentFillCount = 0;
-        let phase = 'filling'; // 'filling', 'emptying', 'waiting'
+        let phase = 'filling'; // 'filling' (右から登場), 'exiting' (左へ退場), 'waiting'
         const turtleWidth = 26; // カメ1匹の間隔（ピクセル）
         
         function initStage() {
@@ -507,9 +507,9 @@
             el.style.fontSize = '1.4rem';
             el.style.top = '0';
             el.style.transform = 'scaleX(1)'; // 左向き
+            // 動きを滑らかにするため、アニメーション速度を少し調整
             el.style.transition = 'left 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-            el.style.left = '105%'; 
-            el.style.display = 'block';
+            el.style.left = '105%'; // 最初は右外
             return el;
         }
         
@@ -517,7 +517,7 @@
             stage.innerHTML = '';
             activeTurtles = [];
             currentFillCount = 0;
-            phase = 'filling'; // ここで安全に増えるフェーズを再開
+            phase = 'filling'; // 1. 最初からスタート
             
             for (let i = 0; i < maxCount; i++) {
                 const t = createTurtleElement(i);
@@ -527,35 +527,38 @@
         }
         
         function tickAnimation() {
-            // 待ち時間フェーズ（waiting）のときは、以降の処理を完全にスキップして何もしない
             if (phase === 'waiting') return;
         
             const stageWidth = stage.getBoundingClientRect().width || stage.offsetWidth;
         
             if (phase === 'filling') {
-                // 【増えるフェーズ】
+                // --- 【1・2：右から1匹ずつ出て、画面幅いっぱいになるまで進む】 ---
                 currentFillCount++;
                 
                 for (let i = 0; i < currentFillCount; i++) {
                     const targetLeft = stageWidth - ((currentFillCount - i) * turtleWidth);
                     activeTurtles[i].style.left = `${targetLeft}px`;
-                    activeTurtles[i].style.display = 'block';
                 }
                 
                 if (currentFillCount >= maxCount) {
-                    phase = 'emptying';
+                    // 2. 画面幅にいっぱいになったら、次は左への退場フェーズへ
+                    phase = 'exiting';
+                    currentFillCount = 0; // スライド用のカウントにリセット
                 }
-            } else if (phase === 'emptying') {
-                // 【消えるフェーズ】
-                currentFillCount--;
+            } else if (phase === 'exiting') {
+                // --- 【3：カメの行列が、左に向かって1匹ずつ消えていく】 ---
+                currentFillCount++; // 左への移動ステップを進める
                 
-                if (activeTurtles[currentFillCount]) {
-                    activeTurtles[currentFillCount].style.display = 'none';
+                for (let i = 0; i < maxCount; i++) {
+                    // 行列全体の目標位置を「さらにカメの幅だけ左（マイナス方向）」にズラしていく
+                    const targetLeft = (stageWidth - (maxCount * turtleWidth)) - (currentFillCount * turtleWidth) + (i * turtleWidth);
+                    activeTurtles[i].style.left = `${targetLeft}px`;
                 }
                 
-                if (currentFillCount <= 0) {
-                    phase = 'waiting'; // 即座に待ちモードにしてフライングを防ぐ
-                    setTimeout(resetAnimation, 1200); // 1.2秒の余韻を置いてから次のループへ
+                // すべてのカメが左端（0px未満）に消え去ったら終了
+                if (currentFillCount >= maxCount + 2) {
+                    phase = 'waiting';
+                    setTimeout(resetAnimation, 800); // 綺麗に消え去った後、少しの余韻を置いて1に戻る
                 }
             }
         }
