@@ -183,41 +183,7 @@
         /* 裏側で保持するプロンプト用の非表示エリア */
         #prompt-text {
             display: none;
-        }
-
-        /* カメが歩くエリアのステージ設定 */
-        .turtle-stage {
-            width: 100%;
-            overflow: hidden; /* 画面外にはみ出たカメを隠す */
-            height: 30px;
-            margin: 8px 0 0 0;
-            position: relative;
-        }
-        
-        /* カメ本体の動き */
-        .walking-turtle {
-            position: absolute;
-            font-size: 1.4rem; /* カメの大きさ */
-            left: -30px; /* 最初は画面の左外に隠しておく */
-            animation: walkAround 15s linear infinite; /* 15秒かけて1周、無限ループ */
-        }
-        
-        /* カメが左から右へ進むアニメーションの定義（向き修正版） */
-        @keyframes walkAround {
-            0% {
-                left: -30px;
-                transform: scaleX(-1); /* ★カメの左右を反転させて右を向かせる */
-            }
-            90% {
-                left: 100%;
-                transform: scaleX(-1); /* ★右を向いたまま画面右外へ進む */
-            }
-            100% {
-                left: -30px;
-                transform: scaleX(-1);
-            }
-        }      
-    
+        }    
     </style>
 </head>
 <body>
