@@ -192,7 +192,117 @@
             height: 30px;
             margin: 8px 0 0 0;
             position: relative;
-        }        
+        } 
+
+        /* 本日の入荷タイトル */
+        .store-card {
+            position: relative;
+        }
+        
+        .store-message {
+            background-color: #0d1117;
+            border: 1px dashed #ff4500;
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* コピー後の店員メッセージ */
+        .clerk-message {
+            min-height: 1.5em;
+            margin: 14px 0 0 0;
+            color: #8b949e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .clerk-message.active {
+            color: var(--text-bright);
+            font-weight: bold;
+        }
+        
+        /* 発売前診断ボタン */
+        .btn-forecast {
+            background-color: #21262d;
+            color: var(--text-bright);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .btn-forecast:active {
+            background-color: #30363d;
+            transform: scale(0.98);
+        }
+        
+        .forecast-result {
+            margin-top: 16px;
+            text-align: left;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            display: none;
+        }
+        
+        .forecast-result.show {
+            display: block;
+        }
+        
+        .forecast-result strong {
+            color: var(--text-bright);
+        }
+        
+        /* 生成後ミッション */
+        .mission-card {
+            border-color: rgba(255, 69, 0, 0.5);
+        }
+        
+        .mission-text {
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin: 0 0 14px 0;
+        }
+        
+        .mission-text:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* うまくいかないとき */
+        .help-card {
+            background-color: #111820;
+        }
+        
+        .help-text {
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin: 0 0 12px 0;
+        }
+        
+        .help-note {
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #8b949e;
+            margin: 12px 0 0 0;
+            border-top: 1px solid #30363d;
+            padding-top: 12px;
+        }
+        
     </style>
 </head>
 <body>
@@ -209,6 +319,15 @@
             <p class="subtitle">AIがあなたらしさを読み解き、<br>世界に1本だけの「ゲームソフト」として<br>パッケージ化します。</p>
         </div>
 
+        <!-- 本日の入荷タイトル -->
+        <div class="card store-card">
+            <span class="step-num">TODAY'S PICK</span>
+            <h2 class="step-title">本日の入荷タイトル</h2>
+            <p id="daily-title" class="store-message">
+                読み込み中...
+            </p>
+        </div>
+        
         <!-- STEP 1: コピー -->
         <div class="card">
             <span class="step-num">STEP 1</span>
@@ -216,6 +335,7 @@
             <button id="copy-button" class="btn-copy" onclick="copyPrompt()">
                 呪文（プロンプト）をコピー
             </button>
+            <p id="clerk-message" class="clerk-message" aria-live="polite"></p>
         </div>
 
         <!-- STEP 2: アプリ起動 -->
@@ -238,6 +358,52 @@
             </div>
         </div>
 
+        <!-- 発売前診断 -->
+        <div class="card">
+            <span class="step-num">BONUS</span>
+            <h2 class="step-title">発売前ジャンル予想</h2>
+            <p class="subtitle" style="margin-bottom: 16px; text-align: left; font-size: 0.85rem;">
+                AIに送る前に、あなたのゲームの「予想ジャンル」と「レア度」をランダム鑑定します。
+                実際のAI生成結果とは異なる場合があります。
+            </p>
+        
+            <button id="forecast-button" class="btn-forecast" onclick="generateForecast()">
+                予想してみる
+            </button>
+        
+            <div id="forecast-result" class="forecast-result" aria-live="polite"></div>
+        </div>
+        
+        <!-- 生成後ミッション -->
+        <div class="card mission-card">
+            <span class="step-num">MISSION</span>
+            <h2 class="step-title">生成後にやってみて</h2>
+            <p class="mission-text">
+                完成したら、周りの人と<strong>「ゲームタイトル」だけ</strong>見せ合ってみてください。<br>
+                同じQRコードから始まっても、発売されるゲームは一人ひとり違います。
+            </p>
+            <p class="mission-text">
+                気に入ったパッケージは、スクリーンショット推奨です。<br>
+                そのゲームは、たぶん二度と同じ形では発売されません。
+            </p>
+        </div>
+        
+        <!-- うまくいかないとき -->
+        <div class="card help-card">
+            <span class="step-num">HELP</span>
+            <h2 class="step-title">うまくいかないとき</h2>
+            <p class="help-text">
+                画像が出ない場合や、文字が崩れてしまった場合も大丈夫です。
+            </p>
+            <p class="help-text">
+                AIに<strong>「画像の代わりに、ゲーム企画書として出して」</strong>と伝えると、
+                あなた専用ゲームの設定資料として楽しめます。
+            </p>
+            <p class="help-note">
+                失敗も含めて、AIがあなたをゲーム化しようとした記録です。
+            </p>
+        </div>
+        
         <!-- 修正したフッタークレジット -->
         <div class="footer">
             <p>© 2026 亀の子作品展</p>
@@ -499,24 +665,102 @@
 
     <!-- コピー処理のJavaScript -->
     <script>
+        const dailyTitles = [
+            '本日の入荷：あなたという未発売タイトル。',
+            'ジャンル未定。主人公はあなた。',
+            'レビュー解禁前の新作です。',
+            'AI GAME STORE 店員コメント：「このゲーム、プレイヤーによって難易度が激変します。」',
+            '本日発売予定：まだ誰も攻略していない、あなたの物語。',
+            '入荷速報：セーブデータは人生経験に依存します。',
+            '注意：このゲームは、プレイヤー本人にも展開が読めません。'
+        ];
+        
+        function setDailyTitle() {
+            const dailyTitle = document.getElementById('daily-title');
+            if (!dailyTitle) return;
+        
+            const index = Math.floor(Math.random() * dailyTitles.length);
+            dailyTitle.textContent = dailyTitles[index];
+        }
+        
+        const forecastGenres = [
+            '記憶探索RPG',
+            '思考整理アドベンチャー',
+            '自己分析シミュレーション',
+            '人生伏線回収ノベル',
+            'こだわり育成ゲーム',
+            '選択肢多すぎローグライク',
+            '日常攻略型ストラテジー',
+            '感情マネジメントRPG',
+            '未完の名作系インディーゲーム',
+            '静かな熱量のクラシックADV'
+        ];
+        
+        const forecastRarities = [
+            '★☆☆☆☆ ノーマル：まずは基本操作から',
+            '★★☆☆☆ レア：一部の人に深く刺さる一本',
+            '★★★☆☆ スーパーレア：攻略するほど味が出る',
+            '★★★★☆ ウルトラレア：クセは強いが名作候補',
+            '★★★★★ レジェンド：説明書が本人にも難しい'
+        ];
+        
+        const forecastComments = [
+            '序盤は穏やかですが、中盤から急に思考イベントが増えます。',
+            'サブクエストの作り込みに定評があります。',
+            '一見シンプルですが、内部パラメータがかなり複雑です。',
+            '攻略サイトより本人の直感が頼りになるタイプです。',
+            '周回プレイするほど新しい解釈が解放されます。',
+            '隠しステータス「こだわり」が高めに設定されています。',
+            'レビュー欄では「なぜか忘れられない」と評されがちです。'
+        ];
+        
+        function generateForecast() {
+            const result = document.getElementById('forecast-result');
+            if (!result) return;
+        
+            const genre = forecastGenres[Math.floor(Math.random() * forecastGenres.length)];
+            const rarity = forecastRarities[Math.floor(Math.random() * forecastRarities.length)];
+            const comment = forecastComments[Math.floor(Math.random() * forecastComments.length)];
+        
+            result.innerHTML = `
+                <div><strong>予想ジャンル：</strong>${genre}</div>
+                <div><strong>予想レア度：</strong>${rarity}</div>
+                <div><strong>店員コメント：</strong>${comment}</div>
+                <div style="margin-top: 10px; color: #8b949e; font-size: 0.8rem;">
+                    ※ 実際のAI鑑定結果とは異なる場合があります。
+                </div>
+            `;
+        
+            result.classList.add('show');
+        }
+        
+        <!-- コピー処理のJavaScript -->
         function copyPrompt() {
             const copyText = document.getElementById("prompt-text");
             const button = document.getElementById("copy-button");
-
-            // クリップボードにコピー
+            const clerkMessage = document.getElementById("clerk-message");
+        
             navigator.clipboard.writeText(copyText.value).then(() => {
-                // ボタンの見た目を「成功」に変更
-                button.textContent = "コピーしました！";
+                button.textContent = "カートに入りました！";
                 button.classList.add("success");
-
-                // 2秒後に元の状態に戻す
+        
+                if (clerkMessage) {
+                    clerkMessage.textContent = "次はAIレジで生成してください。";
+                    clerkMessage.classList.add("active");
+                }
+        
                 setTimeout(() => {
                     button.textContent = "呪文（プロンプト）をコピー";
                     button.classList.remove("success");
-                }, 2000);
+        
+                    if (clerkMessage) {
+                        clerkMessage.textContent = "";
+                        clerkMessage.classList.remove("active");
+                    }
+                }, 2500);
             }).catch(err => {
                 alert("コピーに失敗しました。お手数ですが手動で選択してコピーしてください。");
-                copyText.style.display = "block"; // 失敗した場合はテキストエリアを表示して手動コピーさせる
+                copyText.style.display = "block";
             });
         }
         // クリック数をGoogleに送信する関数
@@ -606,11 +850,14 @@
         
         // 起動処理
         window.addEventListener('load', () => {
+            setDailyTitle();
             setTimeout(initStage, 100);
             setInterval(tickAnimation, 450);
         });
         
         window.addEventListener('resize', initStage);
+
+
         
     </script>
 </body>
