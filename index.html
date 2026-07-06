@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LGG8BZK093"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-LGG8BZK093');
+    </script>    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI GAME STORE - あなたという名の新作ソフト</title>
@@ -203,14 +212,15 @@
             <p class="subtitle" style="margin-bottom: 16px; text-align: left; font-size: 0.85rem;">
                 普段お使いのAIを開き、メッセージ入力欄にそのまま「貼り付け（ペースト）」して送信してください。数十秒であなた専用のゲームが誕生します！
             </p>
+            <!-- STEP 2のリンク部分を以下のように修正 -->
             <div class="ai-links">
-                <!-- 社内推奨Copilotボタン（最上部に大きく配置） -->
-                <a href="https://copilot.microsoft.com/" target="_blank" class="btn-app btn-copilot">Copilot を起動する</a>
+                <!-- Copilotボタン -->
+                <a href="https://copilot.microsoft.com/" target="_blank" class="btn-app btn-copilot" onclick="trackClick('Copilot')">Copilot を起動する</a>
                 
-                <!-- その他のAI用のサブボタン -->
+                <!-- その他のAIボタン -->
                 <div class="other-ai-grid">
-                    <a href="https://chatgpt.com/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;">ChatGPT</a>
-                    <a href="https://claude.ai/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;">Claude</a>
+                    <a href="https://chatgpt.com/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;" onclick="trackClick('ChatGPT')">ChatGPT</a>
+                    <a href="https://claude.ai/" target="_blank" class="btn-app btn-other-ai" style="font-size: 0.85rem; padding: 10px;" onclick="trackClick('Claude')">Claude</a>
                 </div>
             </div>
         </div>
@@ -391,6 +401,12 @@
             }).catch(err => {
                 alert("コピーに失敗しました。お手数ですが手動で選択してコピーしてください。");
                 copyText.style.display = "block"; // 失敗した場合はテキストエリアを表示して手動コピーさせる
+            });
+        }
+        // クリック数をGoogleに送信する関数
+        function trackClick(aiName) {
+            gtag('event', 'click_ai_button', {
+                'ai_type': aiName
             });
         }
     </script>
