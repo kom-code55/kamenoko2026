@@ -227,10 +227,10 @@
         <div class="header">
             <span class="badge">NEW RELEASE</span>
             <h1>AI GAME STORE</h1>
-            
-            <!-- ★ここを中身なしのシンプルな箱に書き換えます★ -->
-            <div id="turtle-container" style="width: 100%; overflow: hidden; height: 35px; margin: 12px 0; font-size: 1.4rem; white-space: nowrap; text-align: left;"></div>
-            
+                    
+            <!-- ★アニメーション用のカメのステージ（ここを差し替え）★ -->
+            <div id="turtle-stage" style="width: 100%; overflow: hidden; height: 35px; margin: 12px 0; position: relative;"></div>            
+        
             <p class="subtitle">あなたという人間をAIがディープに分析し、<br>世界に1本だけの「ゲームソフト」の<br>パッケージとして可視化します。</p>
         </div>
 
@@ -509,49 +509,88 @@
                 'ai_type': aiName
             });
         }
-        // --- カメの増殖＆消滅アニメーション ---
-        const container = document.getElementById('turtle-container');
-        let turtles = [];
-        let maxTurtles = 0;
-        let isFilling = true; // true: 増えるフェーズ, false: 減るフェーズ
+
+        // --- カメのトコトコ大行列アニメーション（決定版） ---
+        const stage = document.getElementById('turtle-stage');
+        let activeTurtles = [];
+        let maxCount = 0;
+        let currentFillCount = 0;
+        let phase = 'filling'; // 'filling' (増える) または 'emptying' (減る)
+        const turtleWidth = 26; // カメ1匹の間隔（ピクセル）
         
-        function calculateMaxTurtles() {
-            // 画面幅（またはコンテナの幅）から、入る最大数を計算（カメ1匹＝約24ピクセル）
-            const containerWidth = container.offsetWidth || window.innerWidth;
-            maxTurtles = Math.floor(containerWidth / 24) - 1; 
-            if (maxTurtles < 3) maxTurtles = 3; // 最低でも3匹は確保
+        function initStage() {
+            const stageWidth = stage.offsetWidth || window.innerWidth;
+            maxCount = Math.floor(stageWidth / turtleWidth) - 1;
+            if (maxCount < 3) maxCount = 3;
+            resetAnimation();
         }
         
-        function updateTurtles() {
-            if (isFilling) {
-                // 【増えるフェーズ】右側から次々とカメが追加される
-                turtles.unshift('🐢'); // 配列の先頭（右側）に追加
+        function createTurtleElement(index) {
+            const el = document.createElement('div');
+            el.innerText = '🐢';
+            // スタイル設定：すべてのカメを右向きに揃え、最初は右端のさらに外側に隠す
+            el.style.position = 'absolute';
+            el.style.fontSize = '1.4rem';
+            el.style.top = '0';
+            el.style.transform = 'scaleX(-1)'; // 完全に右向きに固定
+            el.style.transition = 'left 0.6s cubic-bezier(0.25, 1, 0.5, 1)'; // トコトコ歩く滑らかな動き
+            el.style.left = '110%'; 
+            return el;
+        }
+        
+        function resetAnimation() {
+            stage.innerHTML = '';
+            activeTurtles = [];
+            currentFillCount = 0;
+            phase = 'filling';
+            
+            // あらかじめ画面幅に必要な数だけカメの要素を作ってプールしておく
+            for (let i = 0; i < maxCount; i++) {
+                const t = createTurtleElement(i);
+                stage.appendChild(t);
+                activeTurtles.push(t);
+            }
+        }
+        
+        function tickAnimation() {
+            if (phase === 'filling') {
+                // 【右から1匹ずつ出して、左に詰めていくフェーズ】
+                currentFillCount++;
                 
-                if (turtles.length >= maxTurtles) {
-                    isFilling = false; // 画面幅いっぱいになったら減るフェーズへ
+                // 配置されているすべてのカメの目標位置を再計算して左に動かす
+                for (let i = 0; i < currentFillCount; i++) {
+                    // 右端から順番に並ぶように位置を計算
+                    const targetLeft = (window.innerWidth || stage.offsetWidth) - ((currentFillCount - i) * turtleWidth);
+                    activeTurtles[i].style.left = `${targetLeft}px`;
+                }
+                
+                if (currentFillCount >= maxCount) {
+                    phase = 'emptying'; // 満杯になったら減るフェーズへ
                 }
             } else {
-                // 【減るフェーズ】右側（配列の先頭）から1つずつ消していく
-                turtles.shift(); 
+                // 【右端の先頭から、1匹ずつ右外へ歩いて消えていくフェーズ】
+                const exitIndex = maxCount - currentFillCount;
+                if (activeTurtles[exitIndex]) {
+                    activeTurtles[exitIndex].style.left = '110%'; // 右外へ退場
+                }
+                currentFillCount--;
                 
-                if (turtles.length === 0) {
-                    isFilling = true; // すべて消えたら最初から繰り返す
+                if (currentFillCount <= 0) {
+                    // すべて消えたら、少し待ってから最初からリピート
+                    phase = 'waiting';
+                    setTimeout(resetAnimation, 1000);
                 }
             }
-            
-            // 画面の表示を更新（カメ同士の間隔を少し整える）
-            container.innerHTML = turtles.join('<span style="display:inline-block; transform:scaleX(-1); margin-right:2px;">🐢</span>');
         }
         
-        // 最初の起動設定
+        // 起動処理
         window.addEventListener('load', () => {
-            calculateMaxTurtles();
-            // 0.4秒（400ミリ秒）ごとにトコトコとカメが動く
-            setInterval(updateTurtles, 400); 
+            initStage();
+            setInterval(tickAnimation, 500); // 0.5秒ごとにカメが1アクション起こす
         });
         
-        // スマホの画面の向きが変わったとき（画面幅が変わったとき）の再計算
-        window.addEventListener('resize', calculateMaxTurtles);        
+        window.addEventListener('resize', initStage);        
+              
     </script>
 </body>
 </html>
