@@ -667,22 +667,48 @@
 
     <!-- コピー処理のJavaScript -->
     <script>
-        const dailyTitles = [
-            '本日の入荷：あなたという未発売タイトル。',
-            'ジャンル未定。主人公はあなた。',
-            'レビュー解禁前の新作です。',
-            'AI GAME STORE 店員コメント：「このゲーム、プレイヤーによって難易度が激変します。」',
-            '本日発売予定：まだ誰も攻略していない、あなたの物語。',
-            '入荷速報：セーブデータは人生経験に依存します。',
-            '注意：このゲームは、プレイヤー本人にも展開が読めません。'
+        const dailyGenres = [
+            '記憶探索RPG',
+            '思考整理アドベンチャー',
+            '自己分析シミュレーション',
+            '人生伏線回収ノベル',
+            'こだわり育成ゲーム',
+            '選択肢多すぎローグライク',
+            '日常攻略型ストラテジーゲーム',
+            '感情マネジメントRPG',
+            '未完の名作系インディーゲーム',
+            '静かな熱量のクラシックADV'
+        ];
+        
+        const dailyLeadComments = [
+            '攻略サイトより本人の直感が頼りになる',
+            '周回プレイするほど新しい解釈が解放される',
+            '一見シンプルですが、内部パラメータがかなり複雑な',
+            '隠しステータス「こだわり」が高めに設定された',
+            'サブクエストの作り込みに定評がある',
+            'レビュー欄で「なぜか忘れられない」と評されがちな',
+            '序盤は穏やかですが、中盤から急に思考イベントが増える'
+        ];
+        
+        const dailyTitlePatterns = [
+            (lead, genre) => `本日入荷：${lead}「${genre}」`,
+            (lead, genre) => `新入荷タイトル：「${genre}」。${lead}一本です。`,
+            (lead, genre) => `店員おすすめ：${lead}「${genre}」が入荷しました。`,
+            (lead, genre) => `本日の棚出し：${lead}「${genre}」`,
+            (lead, genre) => `レビュー解禁前：${lead}「${genre}」`,
+            (lead, genre) => `近日発売かもしれない：${lead}「${genre}」`,
+            (lead, genre) => `AI GAME STORE 注目作：${lead}「${genre}」`
         ];
         
         function setDailyTitle() {
             const dailyTitle = document.getElementById('daily-title');
             if (!dailyTitle) return;
         
-            const index = Math.floor(Math.random() * dailyTitles.length);
-            dailyTitle.textContent = dailyTitles[index];
+            const genre = dailyGenres[Math.floor(Math.random() * dailyGenres.length)];
+            const lead = dailyLeadComments[Math.floor(Math.random() * dailyLeadComments.length)];
+            const pattern = dailyTitlePatterns[Math.floor(Math.random() * dailyTitlePatterns.length)];
+        
+            dailyTitle.textContent = pattern(lead, genre);
         }
         
         const forecastGenres = [
