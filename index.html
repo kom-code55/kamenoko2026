@@ -485,16 +485,15 @@
             });
         }
 
-        // --- カメのトコトコ大行列アニメーション（スマホ完全最適化版） ---
+        // --- カメのトコトコ大行列アニメーション（フライングバグ修正版） ---
         const stage = document.getElementById('turtle-stage');
         let activeTurtles = [];
         let maxCount = 0;
         let currentFillCount = 0;
-        let phase = 'filling'; // 'filling' (増える) または 'emptying' (減る)
+        let phase = 'filling'; // 'filling', 'emptying', 'waiting'
         const turtleWidth = 26; // カメ1匹の間隔（ピクセル）
         
         function initStage() {
-            // 画面全体ではなく、親要素（コンテンツ幅）の実際の幅を取得
             const stageWidth = stage.getBoundingClientRect().width || stage.offsetWidth;
             maxCount = Math.floor(stageWidth / turtleWidth);
             if (maxCount < 3) maxCount = 3;
@@ -504,12 +503,11 @@
         function createTurtleElement(index) {
             const el = document.createElement('div');
             el.innerText = '🐢';
-            // スタイル設定：カメを左向き（標準）に戻し、最初はステージの右外側に隠す
             el.style.position = 'absolute';
             el.style.fontSize = '1.4rem';
             el.style.top = '0';
-            el.style.transform = 'scaleX(1)'; // 左向き（逆転を解除）
-            el.style.transition = 'left 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; // 入場時の滑らかな動き
+            el.style.transform = 'scaleX(1)'; // 左向き
+            el.style.transition = 'left 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
             el.style.left = '105%'; 
             el.style.display = 'block';
             return el;
@@ -519,9 +517,8 @@
             stage.innerHTML = '';
             activeTurtles = [];
             currentFillCount = 0;
-            phase = 'filling';
+            phase = 'filling'; // ここで安全に増えるフェーズを再開
             
-            // 計算されたコンテナ幅にぴったり収まる数だけカメを生成
             for (let i = 0; i < maxCount; i++) {
                 const t = createTurtleElement(i);
                 stage.appendChild(t);
@@ -530,47 +527,47 @@
         }
         
         function tickAnimation() {
+            // 待ち時間フェーズ（waiting）のときは、以降の処理を完全にスキップして何もしない
+            if (phase === 'waiting') return;
+        
             const stageWidth = stage.getBoundingClientRect().width || stage.offsetWidth;
         
             if (phase === 'filling') {
-                // 【増えるフェーズ：右から1匹ずつ左に詰めて並べる】
+                // 【増えるフェーズ】
                 currentFillCount++;
                 
                 for (let i = 0; i < currentFillCount; i++) {
-                    // ステージの幅を基準に、右端から綺麗に整列させる計算に変更
                     const targetLeft = stageWidth - ((currentFillCount - i) * turtleWidth);
                     activeTurtles[i].style.left = `${targetLeft}px`;
                     activeTurtles[i].style.display = 'block';
                 }
                 
                 if (currentFillCount >= maxCount) {
-                    phase = 'emptying'; // ぴったり満杯になったら消去フェーズへ
+                    phase = 'emptying';
                 }
-            } else {
-                // 【消えるフェーズ：右端（新しく入ってきた後ろの奴）から順に1 匹ずつ非表示にする】
+            } else if (phase === 'emptying') {
+                // 【消えるフェーズ】
                 currentFillCount--;
                 
-                // 右端のターゲットを非表示（消去）にする
                 if (activeTurtles[currentFillCount]) {
                     activeTurtles[currentFillCount].style.display = 'none';
                 }
                 
                 if (currentFillCount <= 0) {
-                    phase = 'waiting';
-                    setTimeout(resetAnimation, 800); // すべて消えたら少し待ってリピート
+                    phase = 'waiting'; // 即座に待ちモードにしてフライングを防ぐ
+                    setTimeout(resetAnimation, 1200); // 1.2秒の余韻を置いてから次のループへ
                 }
             }
         }
         
         // 起動処理
         window.addEventListener('load', () => {
-            // 読み込み直後は要素の幅が確定していないことがあるため少し猶予を持たせる
             setTimeout(initStage, 100);
-            setInterval(tickAnimation, 450); // テンポよく動くよう0.45秒に微調整
+            setInterval(tickAnimation, 450);
         });
         
-        window.addEventListener('resize', initStage);  
-              
+        window.addEventListener('resize', initStage);
+        
     </script>
 </body>
 </html>
