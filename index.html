@@ -202,21 +202,21 @@
             animation: walkAround 15s linear infinite; /* 15秒かけて1周、無限ループ */
         }
         
-        /* カメが左から右へ進むアニメーションの定義 */
+        /* カメが左から右へ進むアニメーションの定義（向き修正版） */
         @keyframes walkAround {
             0% {
                 left: -30px;
-                transform: scaleX(1); /* 右を向く */
+                transform: scaleX(-1); /* ★カメの左右を反転させて右を向かせる */
             }
             90% {
                 left: 100%;
-                transform: scaleX(1); /* 右を向いたまま画面右外へ */
+                transform: scaleX(-1); /* ★右を向いたまま画面右外へ進む */
             }
-            /* 100%までの間で一瞬で左に戻る */
             100% {
                 left: -30px;
+                transform: scaleX(-1);
             }
-        }        
+        }      
     
     </style>
 </head>
