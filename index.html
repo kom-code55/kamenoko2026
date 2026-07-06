@@ -183,7 +183,16 @@
         /* 裏側で保持するプロンプト用の非表示エリア */
         #prompt-text {
             display: none;
-        }    
+        } 
+        
+        /* カメが歩くエリアのステージ設定 */
+        .turtle-stage {
+            width: 100%;
+            overflow: hidden; /* 画面外にはみ出たカメを隠す */
+            height: 30px;
+            margin: 8px 0 0 0;
+            position: relative;
+        }        
     </style>
 </head>
 <body>
