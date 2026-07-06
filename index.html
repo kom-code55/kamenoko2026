@@ -228,10 +228,8 @@
             <span class="badge">NEW RELEASE</span>
             <h1>AI GAME STORE</h1>
             
-            <!-- ★ここにカメのコードを挿入★ -->
-            <div class="turtle-stage">
-                <div class="walking-turtle">🐢</div>
-            </div>
+            <!-- ★ここを中身なしのシンプルな箱に書き換えます★ -->
+            <div id="turtle-container" style="width: 100%; overflow: hidden; height: 35px; margin: 12px 0; font-size: 1.4rem; white-space: nowrap; text-align: left;"></div>
             
             <p class="subtitle">あなたという人間をAIがディープに分析し、<br>世界に1本だけの「ゲームソフト」のパッケージとして可視化します。</p>
         </div>
@@ -511,6 +509,49 @@
                 'ai_type': aiName
             });
         }
+        // --- カメの増殖＆消滅アニメーション ---
+        const container = document.getElementById('turtle-container');
+        let turtles = [];
+        let maxTurtles = 0;
+        let isFilling = true; // true: 増えるフェーズ, false: 減るフェーズ
+        
+        function calculateMaxTurtles() {
+            // 画面幅（またはコンテナの幅）から、入る最大数を計算（カメ1匹＝約24ピクセル）
+            const containerWidth = container.offsetWidth || window.innerWidth;
+            maxTurtles = Math.floor(containerWidth / 24) - 1; 
+            if (maxTurtles < 3) maxTurtles = 3; // 最低でも3匹は確保
+        }
+        
+        function updateTurtles() {
+            if (isFilling) {
+                // 【増えるフェーズ】右側から次々とカメが追加される
+                turtles.unshift('🐢'); // 配列の先頭（右側）に追加
+                
+                if (turtles.length >= maxTurtles) {
+                    isFilling = false; // 画面幅いっぱいになったら減るフェーズへ
+                }
+            } else {
+                // 【減るフェーズ】右側（配列の先頭）から1つずつ消していく
+                turtles.shift(); 
+                
+                if (turtles.length === 0) {
+                    isFilling = true; // すべて消えたら最初から繰り返す
+                }
+            }
+            
+            // 画面の表示を更新（カメ同士の間隔を少し整える）
+            container.innerHTML = turtles.join('<span style="display:inline-block; transform:scaleX(-1); margin-right:2px;">🐢</span>');
+        }
+        
+        // 最初の起動設定
+        window.addEventListener('load', () => {
+            calculateMaxTurtles();
+            // 0.4秒（400ミリ秒）ごとにトコトコとカメが動く
+            setInterval(updateTurtles, 400); 
+        });
+        
+        // スマホの画面の向きが変わったとき（画面幅が変わったとき）の再計算
+        window.addEventListener('resize', calculateMaxTurtles);        
     </script>
 </body>
 </html>
